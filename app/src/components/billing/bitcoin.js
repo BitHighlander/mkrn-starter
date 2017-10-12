@@ -4,13 +4,20 @@
 import React, { Component } from 'react';
 
 import QRCode from 'react-qr';
-import bitcoin from '../../components/billing/bitcoin';
+import PropTypes from 'prop-types';
+// import bitcoin from '../../components/billing/bitcoin';
+import Websocket from 'react-websocket';
+import { connect } from 'react-redux';
+import { getAuthenticatedUser } from '../../redux/modules/user';
+import { logoutUser } from '../../redux/modules/authentication';
+
 // var QRCode = require('react-qr')
 
 
 class CreditCardFields extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       showComponent: false,
     };
@@ -18,14 +25,11 @@ class CreditCardFields extends Component {
   }
 
     componentDidMount = () => {
-      // Mount Stripe elements
-      this.address = '1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v';
-    };
 
-    // onSubmit = () => {
-    //   this.address = '1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v';
-    //   console.log('KSADJFHSDKFJGHSDKJFHSDKJFHSDJKHFKJDSFHDSKJFHJSKDFH');
-    // }
+    // const { user } = this.props;
+      // Mount Stripe elements
+      this.address = 'THISISANADDRESS WYUB WYBW YBW';
+    };
 
 
     onButtonClick() {
@@ -34,39 +38,64 @@ class CreditCardFields extends Component {
       });
     }
 
+    handleData(data) {
+      const result = JSON.parse(data);
+      console.log(result);
+      this.setState({ count: this.state.count + result.movement });
+    }
+
     render() {
       return (
-        <h1>Buy Funbucks bro!
-          <br />
+        <div className="auth-box">
+          <h1>Buy Funbucks bro!
+            <br />
 
-          {/* <button onClick={this.onSubmit} className="btn btn-info btn-lg"> */}
-          {/* <span className="glyphicon glyphicon-bitcoin" /> Bitcoin */}
-          {/* </button> */}
+            {/* <button onClick={this.onSubmit} className="btn btn-info btn-lg"> */}
+            {/* <span className="glyphicon glyphicon-bitcoin" /> Bitcoin */}
+            {/* </button> */}
+            <Websocket
+              url="ws://localhost:4200"
+              onMessage={this.handleData.bind(this)}
+            />
 
+            <div>
+              <button onClick={this.onButtonClick} className="btn btn-info btn-lg"><span className="glyphicon glyphicon-bitcoin" /> Bitcoin</button>
+              {this.state.showComponent ?
+                <QRCode text={this.address} /> :
+                null
+              }
+            </div>
 
-          <div>
-            <button onClick={this.onButtonClick} className="btn btn-info btn-lg"><span className="glyphicon glyphicon-bitcoin" /> Bitcoin</button>
-            {this.state.showComponent ?
-              <QRCode text={this.address} /> :
-              null
-            }
-          </div>
+            {/* <QRCode value="hey" /> */}
 
-          {/* <QRCode value="hey" /> */}
+            {/* <ul className="form-list"> */}
+            {/* <li> */}
+            {/* <label htmlFor="card-element"> */}
+            {/* {this.props.label} */}
+            {/* </label> */}
+            {/* <div id="card-element" /> */}
+            {/* </li> */}
+            {/* </ul> */}
+            <div id="card-errors" role="alert" />
 
-          {/* <ul className="form-list"> */}
-          {/* <li> */}
-          {/* <label htmlFor="card-element"> */}
-          {/* {this.props.label} */}
-          {/* </label> */}
-          {/* <div id="card-element" /> */}
-          {/* </li> */}
-          {/* </ul> */}
-          <div id="card-errors" role="alert" />
-
-        </h1>
+          </h1>
+        </div>
       );
     }
 }
 
-export default CreditCardFields;
+CreditCardFields.propTypes = {
+  user: PropTypes.shape({
+    firstName: PropTypes.string,
+    bitcoin: PropTypes.string,
+  }),
+  authenticated: PropTypes.bool,
+  logoutUser: PropTypes.func,
+};
+
+const mapStateToProps = ({ user, authentication }) => ({
+  user: getAuthenticatedUser({ user, authentication }),
+  authenticated: authentication.authenticated,
+});
+
+export default connect(mapStateToProps, { logoutUser })(CreditCardFields);

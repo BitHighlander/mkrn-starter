@@ -6,6 +6,7 @@ import Billing from '../../components/billing/bitcoin';
 const AuthenticatedRoutes = () => (
   <Switch>
     <Route exact path="/dashboard" component={Billing} />
+    <Route exact path="/bitcoin" component={Billing} />
   </Switch>
 );
 

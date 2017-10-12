@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const logger = require('koa-logger');
@@ -5,7 +6,14 @@ const cors = require('kcors');
 const bodyParser = require('koa-bodyparser');
 const routes = require('./routes');
 const config = require('./config');
-const IO = require('koa-socket');
+let pubsubLib = require('redis'),
+  subscriber = pubsubLib.createClient(),
+  publisher = pubsubLib.createClient();
+// redis
+const Redis = require('then-redis');
+
+const redis = Redis.createClient();
+
 
 // Make mongoose use native ES6 promises
 mongoose.Promise = global.Promise;
@@ -13,7 +21,37 @@ mongoose.Promise = global.Promise;
 // Connect to MongoDB
 mongoose.connect(config.database.url, config.database.opts);
 
+// Websocket
+// Create the Socket
+let WebSocketServer = require('ws').Server,
+  wss = new WebSocketServer({ port: 4200 });
 
+wss.broadcast = function broadcast(data) {
+  console.log('data: ', data);
+  wss.clients.forEach((client) => {
+    console.log('data2: ', data);
+    client.send(data);
+  });
+};
+
+// broadcast
+subscriber.subscribe('publish');
+subscriber.on('message', async (channel, payloadS) => {
+  const tag = ' | publish | ';
+  try {
+    const payload = JSON.parse(payloadS);
+    let sequence = await redis.incrby('sequence', 1);
+    sequence += 1;
+    payload.sequence = sequence;
+    console.log(payload);
+    wss.broadcast(JSON.stringify(payload));
+  } catch (e) {
+    console.log(tag, 'payloadS: ', payloadS);
+    console.error(tag, 'ERROR: ', e);
+  }
+});
+
+// App
 const app = new Koa()
   .use(cors())
   .use(logger())
@@ -21,25 +59,6 @@ const app = new Koa()
   .use(routes.routes())
   .use(routes.allowedMethods());
 
-//const io = new IO();
-
-// io.attach(app);
-//
-//
-// function sendTime() {
-//   io.emit('time', { time: new Date().toJSON() });
-// }
-
-// Send current time every 10 secs
-//setInterval(sendTime, 10000);
-
-// Emit welcome message on connection
-// io.on('connection', (socket) => {
-//   // Use socket to communicate with this particular client only, sending it it's own id
-//   socket.emit('welcome', { message: 'Welcome!', id: socket.id });
-//
-//   socket.on('i am client', console.log);
-// });
 
 const server = app.listen(config.server.port);
 

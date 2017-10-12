@@ -36,6 +36,11 @@ class Header extends Component {
         authenticated: true,
       },
       {
+        name: (user && user.bitcoin) || 'bitcoin',
+        link: 'bitcoin',
+        authenticated: true,
+      },
+      {
         name: 'Sign out',
         onClick: this.props.logoutUser,
         authenticated: true,
@@ -94,6 +99,7 @@ class Header extends Component {
 Header.propTypes = {
   user: PropTypes.shape({
     firstName: PropTypes.string,
+    bitcoin: PropTypes.string,
   }),
   authenticated: PropTypes.bool,
   logoutUser: PropTypes.func,
