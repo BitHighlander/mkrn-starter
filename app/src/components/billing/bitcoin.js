@@ -25,10 +25,10 @@ class CreditCardFields extends Component {
   }
 
     componentDidMount = () => {
-
-    // const { user } = this.props;
+      const { user } = this.props;
+      console.log('user BRO: ', user);
       // Mount Stripe elements
-      this.address = 'THISISANADDRESS WYUB WYBW YBW';
+      this.address = user.bitcoin;
     };
 
 

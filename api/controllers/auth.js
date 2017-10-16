@@ -71,6 +71,7 @@ exports.register = async (ctx, next) => {
     { name: 'email', required: true },
     { name: 'name', required: true },
     { name: 'password', required: true },
+    { name: 'yubikey', required: false },
   ]);
 
   if (validation && validation.length && validation[0].error) {
@@ -79,7 +80,7 @@ exports.register = async (ctx, next) => {
     await next();
   }
 
-  const { email, password, name } = validation;
+  const { email, password, name, yubikey } = validation;
 
   if (email && password && name) {
     const formattedEmail = email.toLowerCase();
@@ -94,6 +95,7 @@ exports.register = async (ctx, next) => {
           name,
           password,
           email,
+          yubikey,
         });
 
         const savedUser = await user.save();

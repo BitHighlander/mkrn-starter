@@ -24,6 +24,7 @@ class Header extends Component {
 
   buildNavigation = () => {
     const { user } = this.props;
+    console.log('user: ', user);
     const links = [
       {
         name: 'Dashboard',
@@ -36,8 +37,13 @@ class Header extends Component {
         authenticated: true,
       },
       {
-        name: (user && user.bitcoin) || 'bitcoin',
+        name: (user && user.bitcoin),
         link: 'bitcoin',
+        authenticated: true,
+      },
+      {
+        name: (user && user.yubiID) || 'keyID',
+        link: 'profile',
         authenticated: true,
       },
       {

@@ -28,6 +28,7 @@ class Register extends Component {
     { id: 'email', name: 'email', label: 'Email', type: 'email', placeholder: 'you@yourdomain.com', component: TextInput },
     { id: 'password', name: 'password', label: 'Password', type: 'password', placeholder: '********', component: TextInput },
     { id: 'passwordConfirm', name: 'passwordConfirm', label: 'Confirm Password', type: 'password', placeholder: '********', component: TextInput },
+    { id: 'yubikey', name: 'yubikey', label: '(press yubikey) optional', type: 'password', placeholder: 'ccccskdfd....', component: TextInput },
   ];
 
   handleFormSubmit = formProps => this.props.register(formProps);
