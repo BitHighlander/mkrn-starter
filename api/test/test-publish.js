@@ -5,7 +5,7 @@
 
 // const WebSocket = require('ws');
 //
-// const wss = new WebSocket.Server({ port: 4200 });
+// const wss = new WebSocket.Server({ port: 4101 });
 //
 // // Broadcast to all.
 // wss.broadcast = function broadcast(data) {
@@ -17,14 +17,23 @@
 // };
 //
 // wss.on('connection', (ws) => {
-//   ws.on('message', (data) => {
-//     // Broadcast to everyone else.
+//   const ping = function () {
 //     wss.clients.forEach((client) => {
 //       if (client !== ws && client.readyState === WebSocket.OPEN) {
-//         client.send(data);
+//         client.send('this is a test bro');
 //       }
 //     });
-//   });
+//   };
+//   setInterval(ping, 1000);
+//
+//   // ws.on('message', (data) => {
+//   //   // Broadcast to everyone else.
+//   //   wss.clients.forEach((client) => {
+//   //     if (client !== ws && client.readyState === WebSocket.OPEN) {
+//   //       client.send("this is a test bro");
+//   //     }
+//   //   });
+//   // });
 // });
 
 
